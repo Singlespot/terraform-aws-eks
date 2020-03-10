@@ -1,21 +1,21 @@
 resource "random_pet" "node_groups" {
-  for_each = local.node_groups_expanded
+  count = var.node_groups_count
 
   separator = "-"
   length    = 2
 
   keepers = {
-    ami_type      = lookup(each.value, "ami_type", null)
-    disk_size     = lookup(each.value, "disk_size", null)
-    instance_type = each.value["instance_type"]
-    iam_role_arn  = each.value["iam_role_arn"]
+    ami_type      = lookup(local.node_groups_expanded_values[count.index], "ami_type", null)
+    disk_size     = lookup(local.node_groups_expanded_values[count.index], "disk_size", null)
+    instance_type = local.node_groups_expanded_values[count.index]["instance_type"]
+    iam_role_arn  = local.node_groups_expanded_values[count.index]["iam_role_arn"]
 
-    key_name = each.value["key_name"]
+    key_name = local.node_groups_expanded_values[count.index]["key_name"]
 
     source_security_group_ids = join("|", compact(
-      lookup(each.value, "source_security_group_ids", [])
+      lookup(local.node_groups_expanded_values[count.index], "source_security_group_ids", [])
     ))
-    subnet_ids      = join("|", each.value["subnets"])
-    node_group_name = join("-", [var.cluster_name, each.key])
+    subnet_ids      = join("|", local.node_groups_expanded_values[count.index]["subnets"])
+    node_group_name = join("-", [var.cluster_name, local.node_groups_expanded_keys[count.index]])
   }
 }

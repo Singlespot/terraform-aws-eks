@@ -34,3 +34,8 @@ variable "node_groups" {
   type        = any
   default     = {}
 }
+
+variable "node_groups_count" {
+  description = "Number of node groups"
+  type        = number
+}

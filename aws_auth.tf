@@ -43,7 +43,7 @@ data "template_file" "worker_role_arns" {
 }
 
 data "template_file" "node_group_arns" {
-  count    = var.create_eks ? length(module.node_groups.aws_auth_roles) : 0
+  count    = var.node_groups_count
   template = file("${path.module}/templates/worker-role.tpl")
 
   vars = module.node_groups.aws_auth_roles[count.index]

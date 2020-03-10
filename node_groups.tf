@@ -25,4 +25,5 @@ module "node_groups" {
   tags                   = var.tags
   node_groups_defaults   = var.node_groups_defaults
   node_groups            = var.node_groups
+  node_groups_count      = var.node_groups_count
 }

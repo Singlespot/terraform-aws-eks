@@ -300,6 +300,12 @@ variable "node_groups" {
   default     = {}
 }
 
+variable "node_groups_count" {
+  description = "Number of node groups to create. See `node_groups` module's documentation for more details"
+  type        = number
+  default     = 0
+}
+
 variable "enable_irsa" {
   description = "Whether to create OpenID Connect Provider for EKS to enable IRSA"
   type        = bool

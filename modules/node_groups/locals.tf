@@ -13,4 +13,6 @@ locals {
     var.node_groups_defaults,
     v,
   ) if var.create_eks }
+  node_groups_expanded_keys   = keys(local.node_groups_expanded)
+  node_groups_expanded_values = values(local.node_groups_expanded)
 }
