@@ -199,41 +199,6 @@ provider "kubernetes" {
 }
 
 locals {
-//  public_node_groups = {
-//
-//  }
-//  node_groups_keys = flatten([
-//    for subnet in local.public_subnets: [
-//      "ng-${subnet.type}-${subnet.availability_zone}"
-//    ]
-//  ])
-//  node_groups_values = flatten([
-//    for subnet in local.public_subnets: [
-//      {
-//        name              = "${var.node_group_name}-${subnet.type}-${subnet.availability_zone}"
-//        desired_capacity  = var.node_auto_scaling_group_desired_capacity
-//        max_capacity      = var.node_auto_scaling_group_max_size
-//        min_capacity      = var.node_auto_scaling_group_min_size
-//
-//        subnets           = [subnet.subnet_id]
-//
-//        disk_size         = var.node_volume_size
-//        key_name          = var.ssh_key_name
-//
-//        ami_type          = var.node_ami_type
-//        instance_type     = var.node_instance_type
-//        k8s_labels = {
-//          Environment = var.environment
-//        }
-//        additional_tags = {
-//          Environment = var.environment
-//          AvailabilityZone = subnet.availability_zone
-//        }
-//      }
-//    ]
-//  ])
-//  node_groups2 = zipmap(local.node_groups_keys, local.node_groups_values)
-
   node_groups = {
     for subnet in concat(local.private_subnets, local.public_subnets):
       "ng-${subnet.type}-${subnet.availability_zone}" => {
@@ -285,27 +250,6 @@ module "eks" {
 
   node_groups = local.node_groups
   node_groups_count = local.node_groups_count
-
-//  node_groups = {
-//    ng = {
-//      name              = var.node_group_name
-//      desired_capacity  = var.node_auto_scaling_group_desired_capacity
-//      max_capacity      = var.node_auto_scaling_group_max_size
-//      min_capacity      = var.node_auto_scaling_group_min_size
-//
-//      disk_size         = var.node_volume_size
-//      key_name          = var.ssh_key_name
-//
-//      ami_type          = var.node_ami_type
-//      instance_type     = var.node_instance_type
-//      k8s_labels = {
-//        Environment = var.environment
-//      }
-//      additional_tags = {
-//        Environment = var.environment
-//      }
-//    }
-//  }
 
   map_roles    = var.map_roles
   map_users    = var.map_users

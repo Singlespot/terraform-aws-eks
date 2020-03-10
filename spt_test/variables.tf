@@ -47,40 +47,10 @@ variable "enable_dns_hostnames" {
   type    = bool
 }
 
-//variable "create_peering_connections" {
-//  type = bool
-//  default = true
-//}
-
 variable "peer_vpc_list" {
   default = ["DEFAULT"]
   type    = list(string)
 }
-
-//variable "peer_vpc_list" {
-//  default = [
-//    {
-//      name = "DEFAULT"
-//      cidr = "172.31.0.0/16"
-//    }
-//  ]
-//  type = list(object({
-//    name = string
-//    cidr = string
-//  }))
-//}
-
-//variable "cloudformation_stack_name" {
-//  type = string
-//}
-//
-//variable "cloudformation_stack_description" {
-//  type = string
-//}
-//
-//variable "cluster_control_plane_security_group" {
-//  type = string
-//}
 
 variable "cluster_name" {
   type = string
@@ -108,11 +78,6 @@ variable "node_auto_scaling_group_desired_capacity" {
 
 variable "node_group_name" {
   type = string
-}
-
-variable "node_image_id" {
-  default = "ami-0b9d2c11b47bd8264"
-  type    = string
 }
 
 variable "node_ami_type" {
