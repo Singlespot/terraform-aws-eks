@@ -4,7 +4,7 @@ terraform {
 
 provider "aws" {
 //  version = ">= 2.28.1"
-  version = ">= 2.52"
+  version = ">= 2.53"
   region  = var.region
 }
 
@@ -235,9 +235,10 @@ locals {
 }
 
 module "eks" {
-  source       = "./.."
-  cluster_name = var.cluster_name
-  subnets      = module.vpc.public_subnets
+  source          = "./.."
+  cluster_name    = var.cluster_name
+  cluster_version = var.cluster_version
+  subnets         = module.vpc.public_subnets
 
   tags = {
     Environment = var.environment
@@ -258,15 +259,35 @@ module "eks" {
 
 data "aws_autoscaling_group" "autoscaling_groups" {
   count = local.node_groups_count
-//  for_each = module.eks.node_groups
-//  depends_on = [module.eks]
   name = module.eks.node_groups[count.index].resources[0].autoscaling_groups[0].name
 }
 
-data "aws_launch_template" "launch_templates" {
+//data "aws_launch_template" "launch_templates" {
+//  count = local.node_groups_count
+////  for_each = data.aws_autoscaling_group.autoscaling_groups
+//  name = data.aws_autoscaling_group.autoscaling_groups[count.index].launch_template[0].name
+//}
+
+locals {
+  ngs   = module.eks.node_groups
+  asgs  = data.aws_autoscaling_group.autoscaling_groups
+}
+
+resource "null_resource" "autoscaling_groups_add_tags" {
   count = local.node_groups_count
-//  for_each = data.aws_autoscaling_group.autoscaling_groups
-  name = data.aws_autoscaling_group.autoscaling_groups[count.index].launch_template[0].name
+  triggers = {
+    asg_name = local.asgs[count.index].name
+  }
+
+  provisioner "local-exec" {
+    command = "aws autoscaling create-or-update-tags --tags ResourceId=${local.asgs[count.index].name},ResourceType=auto-scaling-group,Key=Name,Value=${local.ngs[count.index].node_group_name},PropagateAtLaunch=true"
+  }
+}
+
+data "aws_autoscaling_group" "autoscaling_groups_updated" {
+  count = local.node_groups_count
+  depends_on = [null_resource.autoscaling_groups_add_tags]
+  name = module.eks.node_groups[count.index].resources[0].autoscaling_groups[0].name
 }
 
 //resource "aws_launch_template" "lt" {

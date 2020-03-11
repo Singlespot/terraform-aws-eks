@@ -71,12 +71,12 @@ output "public_subnets_zone_to_id" {
 }
 
 output "autoscaling_groups" {
-  value = data.aws_autoscaling_group.autoscaling_groups
+  value = data.aws_autoscaling_group.autoscaling_groups_updated
 }
 
-output "launch_templates" {
-  value = data.aws_launch_template.launch_templates
-}
+//output "launch_templates" {
+//  value = data.aws_launch_template.launch_templates
+//}
 
 //output "launch_templates" {
 //  value = aws_launch_template.launch_templates
