@@ -235,7 +235,7 @@ locals {
 }
 
 module "eks" {
-  source          = "./.."
+  source          = "../modules/eks"
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
   subnets         = module.vpc.public_subnets
@@ -262,15 +262,10 @@ data "aws_autoscaling_group" "autoscaling_groups" {
   name = module.eks.node_groups[count.index].resources[0].autoscaling_groups[0].name
 }
 
-//data "aws_launch_template" "launch_templates" {
-//  count = local.node_groups_count
-////  for_each = data.aws_autoscaling_group.autoscaling_groups
-//  name = data.aws_autoscaling_group.autoscaling_groups[count.index].launch_template[0].name
-//}
-
 locals {
   ngs   = module.eks.node_groups
   asgs  = data.aws_autoscaling_group.autoscaling_groups
+  instances = data.aws_autoscaling_group.autoscaling_groups[*].instances
 }
 
 resource "null_resource" "autoscaling_groups_add_tags" {
@@ -284,39 +279,19 @@ resource "null_resource" "autoscaling_groups_add_tags" {
   }
 }
 
+resource "null_resource" "instances_add_tags" {
+  count = local.node_groups_count
+  triggers = {
+    instance_names = join(" ", local.instances[count.index])
+  }
+
+  provisioner "local-exec" {
+    command = "aws ec2 create-tags --resources ${join(" ", local.instances[count.index])} --tags Key=Name,Value=${local.ngs[count.index].node_group_name}"
+  }
+}
+
 data "aws_autoscaling_group" "autoscaling_groups_updated" {
   count = local.node_groups_count
   depends_on = [null_resource.autoscaling_groups_add_tags]
   name = module.eks.node_groups[count.index].resources[0].autoscaling_groups[0].name
 }
-
-//resource "aws_launch_template" "lt" {
-//
-//}
-
-//resource "aws_launch_template" "launch_templates" {
-//  for_each = data.aws_autoscaling_group.autoscaling_groups
-//  name = each.value.launch_template[0].name
-//  tags = {
-//    Name = "${var.cluster_name}-lt-${each.key}"
-//    test = true
-//  }
-//  tag_specifications {
-//    resource_type = "instance"
-//    tags = {
-//      Name = "${var.cluster_name}-${each.key}"
-//    }
-//  }
-//}
-
-//data "aws_launch_template" "launch_template_0" {
-//  depends_on = [module.eks]
-//  name = module.eks.node_groups["ng-public-eu-west-1a"].resources[0].autoscaling_groups[0].name
-//}
-
-//data "aws_launch_template" "lt" {
-//  depends_on = ["module.eks"]
-//  name = module.eks.node_groups["ng"].resources[0].autoscaling_groups[0].name
-//}
-
-//module.eks.node_groups
