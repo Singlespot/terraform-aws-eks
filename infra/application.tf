@@ -1,11 +1,12 @@
 locals {
-  kubeconfig              = module.eks.kubeconfig_filename
-  metrics_path            = "scripts/metrics.sh"
-  dashboard_path          = "scripts/dashboard.sh"
-  dashboard_url           = "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml"
-  dashboard_k8s_path      = "k8s/dashboard/eks-admin-service-account.yaml"
-  prometheus_path         = "scripts/prometheus.sh"
-  cluster_autoscaler_path = "scripts/cluster_autoscaler.sh"
+  kubeconfig                  = module.eks.kubeconfig_filename
+  metrics_path                = "scripts/metrics.sh"
+  dashboard_path              = "scripts/dashboard.sh"
+  dashboard_url               = "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml"
+  dashboard_k8s_path          = "k8s/dashboard/eks-admin-service-account.yaml"
+  prometheus_path             = "scripts/prometheus.sh"
+  cluster_autoscaler_path     = "scripts/cluster_autoscaler.sh"
+  cluster_autoscaler_version  = "v1.15.5"
 }
 
 resource "null_resource" "deploy_metrics" {
@@ -52,6 +53,7 @@ resource "null_resource" "deploy_prometheus" {
 resource "null_resource" "deploy_cluster_autoscaler" {
   triggers = {
     yaml_md5      = filemd5(local.cluster_autoscaler_path)
+    version       = local.cluster_autoscaler_version
     region        = var.region
     cluster_name  = var.cluster_name
   }
@@ -60,7 +62,7 @@ resource "null_resource" "deploy_cluster_autoscaler" {
     environment = {
       KUBECONFIG = local.kubeconfig
     }
-    command = "${local.cluster_autoscaler_path} ${var.region} ${var.cluster_name}"
+    command = "${local.cluster_autoscaler_path} ${local.cluster_autoscaler_version} ${var.region} ${var.cluster_name}"
   }
 }
 
