@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ template "pulsar.fullname" . }}-resource-quota
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.proxy.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  hard:
+    requests.cpu: {{ .Values.resourceQuota.requests.cpu }}
+    requests.memory: {{ .Values.resourceQuota.requests.memory }}
+    requests.ephemeral-storage: {{ .Values.resourceQuota.requests.ephemeralStorage }}
+    limits.cpu: {{ .Values.resourceQuota.limits.cpu }}
+    limits.memory: {{ .Values.resourceQuota.limits.memory }}
+    limits.ephemeral-storage: {{ .Values.resourceQuota.limits.ephemeralStorage }}

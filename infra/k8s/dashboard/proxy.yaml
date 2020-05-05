@@ -1,0 +1,77 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: dashboard-proxy
+  name: dashboard-proxy
+  namespace: kubernetes-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dashboard-proxy
+  template:
+    metadata:
+      labels:
+        app: dashboard-proxy
+    spec:
+      containers:
+        - name: oauth-proxy
+          image: bitnami/oauth2-proxy:4.1.0
+          resources:
+            limits:
+              cpu: 1
+              memory: 512Mi
+              ephemeral-storage: 128Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+              ephemeral-storage: 128Mi
+          args:
+            - --cookie-secure=false
+            - --provider=github
+            - --upstream=https://kubernetes-dashboard.kubernetes-dashboard.svc.cluster.local
+            - --ssl-upstream-insecure-skip-verify
+            - --http-address=0.0.0.0:8080
+            - --redirect-url=https://eks-dev.singlespot.com/oauth2/callback
+            - --email-domain=*
+            - --github-org=Singlespot
+            - --pass-basic-auth=false
+            - --pass-access-token=false
+          env:
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: cookie
+                  name: dashboard-proxy-secret
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: client-id
+                  name: dashboard-proxy-secret
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: client-secret
+                  name: dashboard-proxy-secret
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: dashboard-proxy
+  name: dashboard-proxy
+  namespace: kubernetes-dashboard
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-west-1:268324876595:certificate/d65266d3-b4ab-43da-b35d-c75681ee6371
+spec:
+  selector:
+    app: dashboard-proxy
+  type: LoadBalancer
+  ports:
+    - name: proxy
+      port: 443
+      targetPort: 8080

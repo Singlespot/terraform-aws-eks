@@ -25,20 +25,28 @@ provider "kubernetes" {
   version                 = "1.10.0"
 }
 
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+  keepers = {
+    disk_size         = var.node_volume_size
+    key_name          = var.ssh_key_name
+    ami_type          = var.node_ami_type
+    instance_type     = var.node_instance_type
+  }
+}
+
 locals {
   node_groups = {
     for subnet in concat(local.private_subnets, local.public_subnets):
-      "ng-${subnet.type}-${subnet.availability_zone}" => {
-        name              = "${var.node_group_name}-${subnet.type}-${subnet.availability_zone}"
+      "ng-${subnet.type}-${subnet.availability_zone}-${random_string.suffix.result}" => {
+        name              = "${var.node_group_name}-${subnet.type}-${subnet.availability_zone}-${random_string.suffix.result}"
         desired_capacity  = var.node_auto_scaling_group_desired_capacity
         max_capacity      = var.node_auto_scaling_group_max_size
         min_capacity      = var.node_auto_scaling_group_min_size
-
         subnets           = [subnet.subnet_id]
-
         disk_size         = var.node_volume_size
         key_name          = var.ssh_key_name
-
         ami_type          = var.node_ami_type
         instance_type     = var.node_instance_type
         k8s_labels = {
@@ -118,8 +126,8 @@ resource "null_resource" "instances_add_tags" {
   }
 }
 
-data "aws_autoscaling_group" "autoscaling_groups_updated" {
-  count = local.node_groups_count
-  depends_on = [null_resource.autoscaling_groups_add_tags]
-  name = module.eks.node_groups[count.index].resources[0].autoscaling_groups[0].name
-}
+//data "aws_autoscaling_group" "autoscaling_groups_updated" {
+//  count = local.node_groups_count
+//  depends_on = [null_resource.autoscaling_groups_add_tags]
+//  name = module.eks.node_groups[count.index].resources[0].autoscaling_groups[0].name
+//}

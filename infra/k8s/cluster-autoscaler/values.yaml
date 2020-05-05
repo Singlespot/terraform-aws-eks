@@ -1,0 +1,52 @@
+rbac:
+  create: true
+
+autoDiscovery:
+  enabled: true
+
+# Currently only `gce`, `aws`, `azure` & `spotinst` are supported
+cloudProvider: aws
+
+extraArgs:
+  v: 4
+  stderrthreshold: info
+  logtostderr: true
+  # write-status-configmap: true
+  # leader-elect: true
+  skip-nodes-with-local-storage: false
+  # expander: least-waste | random
+  # scale-down-enabled: true
+  balance-similar-node-groups: true
+  # min-replica-count: 2
+  scale-down-utilization-threshold: 0.5
+  # scale-down-non-empty-candidates-count: 5
+  # max-node-provision-time: 15m0s
+  # scan-interval: 10s
+  # scale-down-delay: 10m
+  # scale-down-unneeded-time: 10m
+  # skip-nodes-with-local-storage: false
+  skip-nodes-with-system-pods: false
+  ignore-daemonsets-utilization: true
+  # -------------------- TMP --------------------
+#  max-node-provision-time: 1m
+#  scan-interval: 5s
+#  scale-down-unneeded-time: 1m
+#  scale-down-unready-time: 1m
+#  unremovable-node-recheck-timeout: 1m
+#  scale-down-delay-after-add: 1m
+#  scale-down-delay-after-failure: 1m
+#  max-failing-time: 2m
+
+#podDisruptionBudget: |
+#  maxUnavailable: 1
+#  # minAvailable: 2
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+    ephemeral-storage: 256Mi

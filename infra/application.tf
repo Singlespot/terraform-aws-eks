@@ -4,7 +4,7 @@ locals {
   metrics_destroy_path            = "scripts/metrics-destroy.sh"
   dashboard_path                  = "scripts/dashboard.sh"
   dashboard_destroy_path          = "scripts/dashboard-destroy.sh"
-  dashboard_url                   = "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml"
+  dashboard_url                   = "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc7/aio/deploy/recommended.yaml"
   dashboard_k8s_path              = "k8s/dashboard/eks-admin-service-account.yaml"
   prometheus_path                 = "scripts/prometheus.sh"
   prometheus_destroy_path         = "scripts/prometheus-destroy.sh"
