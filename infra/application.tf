@@ -4,13 +4,13 @@ locals {
   metrics_destroy_path            = "scripts/metrics-destroy.sh"
   dashboard_path                  = "scripts/dashboard.sh"
   dashboard_destroy_path          = "scripts/dashboard-destroy.sh"
-  dashboard_url                   = "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc7/aio/deploy/recommended.yaml"
+  dashboard_url                   = "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.4/aio/deploy/recommended.yaml"
   dashboard_k8s_path              = "k8s/dashboard/eks-admin-service-account.yaml"
-  prometheus_path                 = "scripts/prometheus.sh"
-  prometheus_destroy_path         = "scripts/prometheus-destroy.sh"
+//  prometheus_path                 = "scripts/prometheus.sh"
+//  prometheus_destroy_path         = "scripts/prometheus-destroy.sh"
   cluster_autoscaler_path         = "scripts/cluster_autoscaler.sh"
   cluster_autoscaler_destroy_path = "scripts/cluster_autoscaler-destroy.sh"
-  cluster_autoscaler_version      = "v1.15.5"
+  cluster_autoscaler_version      = "v1.17.3"
 }
 
 resource "null_resource" "deploy_metrics" {
@@ -58,26 +58,26 @@ resource "null_resource" "deploy_dashboard" {
 //  }
 }
 
-resource "null_resource" "deploy_prometheus" {
-  triggers = {
-    yaml_md5 = filemd5(local.prometheus_path)
-  }
-
-  provisioner "local-exec" {
-    environment = {
-      KUBECONFIG = local.kubeconfig
-    }
-    command = local.prometheus_path
-  }
-
+//resource "null_resource" "deploy_prometheus" {
+//  triggers = {
+//    yaml_md5 = filemd5(local.prometheus_path)
+//  }
+//
 //  provisioner "local-exec" {
-//    when = destroy
 //    environment = {
 //      KUBECONFIG = local.kubeconfig
 //    }
-//    command = local.prometheus_destroy_path
+//    command = local.prometheus_path
 //  }
-}
+//
+////  provisioner "local-exec" {
+////    when = destroy
+////    environment = {
+////      KUBECONFIG = local.kubeconfig
+////    }
+////    command = local.prometheus_destroy_path
+////  }
+//}
 
 resource "null_resource" "deploy_cluster_autoscaler" {
   triggers = {
