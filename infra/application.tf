@@ -10,7 +10,7 @@ locals {
 //  prometheus_destroy_path         = "scripts/prometheus-destroy.sh"
   cluster_autoscaler_path         = "scripts/cluster_autoscaler.sh"
   cluster_autoscaler_destroy_path = "scripts/cluster_autoscaler-destroy.sh"
-  cluster_autoscaler_version      = "v1.17.3"
+  cluster_autoscaler_version      = "v1.18.2"
 }
 
 resource "null_resource" "deploy_metrics" {

@@ -1,3 +1,6 @@
+image:
+  repository: eu.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler
+
 rbac:
   create: true
 
@@ -44,9 +47,9 @@ extraArgs:
 resources:
   limits:
     cpu: 250m
-    memory: 256Mi
+    memory: 384Mi
     ephemeral-storage: 256Mi
   requests:
     cpu: 250m
-    memory: 256Mi
+    memory: 384Mi
     ephemeral-storage: 256Mi
